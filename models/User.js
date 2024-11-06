@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const validator = require("validator");
 
 const userSchema = new mongoose.Schema(
   {
@@ -7,9 +8,14 @@ const userSchema = new mongoose.Schema(
       required: true,
       type: String,
       message: "Email is required",
-      email: true,
-      validator: function (value) {
-        return /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(value);
+      unique: true,
+      lowercase: true,
+      validate: {
+        validator: function (value) {
+          console.log(value, validator.isEmail(value));
+          return validator.isEmail(value);
+        },
+        message: (props) => `${props.value} is not a valid email`,
       },
     },
     gender: {
@@ -18,13 +24,25 @@ const userSchema = new mongoose.Schema(
       message: "Gender is required",
       enum: ["male", "female", "other"],
     },
+    role: {
+      required: true,
+      type: String,
+      message: "Role is required",
+      enum: ["user", "admin"],
+      default: "user",
+    },
     preferences: {
       required: true,
       type: Array,
       message: "Preferences is required",
     },
     age: { required: true, type: Number, message: "Age is required" },
-    password: { required: true, type: String, message: "Password is required",select: false },
+    password: {
+      required: true,
+      type: String,
+      message: "Password is required",
+      select: false,
+    },
     plan: { type: String, default: null },
   },
   { timestamps: true }

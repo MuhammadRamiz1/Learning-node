@@ -1,6 +1,8 @@
 const express=require("express");
 const mongoose=require("mongoose");
 const cors=require("cors");
+const mongoSanitize = require('express-mongo-sanitize');
+const gloabalsErrorHandler = require('./controllers/GlobalError');
 // const bodyParser=require("body-parser");
 const app=express();
 require("dotenv").config();
@@ -15,6 +17,8 @@ app.use(express.urlencoded({ extended: true }));
 app.set('trust proxy', true);
 app.enable('trust proxy', 1);
 
+app.use(mongoSanitize());
+
 app.use("/api/v1/auth",AuthRoutes);
 
 
@@ -23,8 +27,7 @@ app.use("/api/v1/auth",AuthRoutes);
 
 
 
-
-
+app.use(gloabalsErrorHandler);
 
 
 app.listen(process.env.PORT,()=>{

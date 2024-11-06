@@ -5,10 +5,13 @@ const createJWTToken=async(data)=>{
     const token =await jwt.sign({data}, process.env.JWT_SECRET_KEY, { expiresIn:process.env.JWT_EXPIRY_TIME });
     return token;
 }
-const verifyJWTToken=(token)=>{
-    const data=jwt.verify(token, process.env.JWT_SECRET_KEY);
+const verifyJWTToken=async(token)=>{
+    const data=await jwt.verify(token, process.env.JWT_SECRET_KEY);
+    console.log(data)
+    
     return data;
 }
+
 
 
 module.exports={createJWTToken, verifyJWTToken}
