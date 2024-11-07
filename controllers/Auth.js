@@ -3,15 +3,17 @@ const catchAsync = require("../services/catchAsync");
 const { createJWTToken } = require("../services/jwt");
 
 const registerUser=catchAsync(async(req,res)=>{
-    const {name,gender, age,preferences ,email,password}=req.body;
+    const {name,gender, age,preferences ,email,password, role, assignedManagers}=req.body;
     const data={
-        name,gender, age,preferences ,email,password
+        name,gender, age,preferences ,email,password, role
     }
+    console.log({data})
     for(const [key,value] of Object.entries(data)){
         if(!value){
             return res.status(400).send({message:`${key} is required`});
         }
     }
+    data.assignedManagers=assignedManagers;
     const user=new UserModel(data);
     await user.save();
     res.status(200).json({status:"success",data:user});
@@ -19,15 +21,15 @@ const registerUser=catchAsync(async(req,res)=>{
 const loginUser=catchAsync(async(req,res)=>{
     const {email,password}=req.body;
     if(!email || !password){
-        return res.status(400).send("Email or Password is required");
+        return res.status(400).send({message:"Email or Password is required"});
     }
     const findUser=await UserModel.findOne({email}).select("+password");
     if(!findUser){
-        return res.status(400).send("User not found");
+        return res.status(400).send({message:"Incorrect Email or Password"});
     }
 
     if(findUser.password!==password){
-        return res.status(400).send("Email or Password is incorrect");
+        return res.status(400).send({message:"Incorrect Email or Password"});
     }
     findUser.password=undefined;
     const accessToken=await createJWTToken(findUser?.id);

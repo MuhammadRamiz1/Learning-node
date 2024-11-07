@@ -28,7 +28,7 @@ const userSchema = new mongoose.Schema(
       required: true,
       type: String,
       message: "Role is required",
-      enum: ["user", "admin"],
+      enum: ["user", "admin",'manager'],
       default: "user",
     },
     preferences: {
@@ -44,6 +44,13 @@ const userSchema = new mongoose.Schema(
       select: false,
     },
     plan: { type: String, default: null },
+    status: { type: String, default: 'approved', enum:['pending','approved', 'rejected'] },
+    assignedManagers: { 
+      type: [mongoose.Schema.Types.ObjectId], 
+      ref: 'User', // replace 'YourModelName' with the actual model name
+      default: [] 
+  },
+
   },
   { timestamps: true }
 );
